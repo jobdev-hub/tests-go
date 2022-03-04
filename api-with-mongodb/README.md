@@ -1,1 +1,2 @@
-https://www.youtube.com/watch?v=-HaoPvI7sgQ&t=2220s
+Tutorial: https://www.youtube.com/watch?v=-HaoPvI7sgQ&t=2220s
+Doc mongodb/golang: https://www.mongodb.com/languages/golang
