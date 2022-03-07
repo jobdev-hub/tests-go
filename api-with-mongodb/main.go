@@ -1,7 +1,16 @@
 package main
 
-import "fmt"
+import (
+	"api-with-mongodb/controllers/user_controller"
+	"github.com/gin-gonic/gin"
+)
 
 func main() {
-	fmt.Println("Criando api conectada ao mongoDB")
+	router := gin.Default()
+	user_controller.Routers(router)
+
+	err := router.Run("localhost:8080")
+	if err != nil {
+		return
+	}
 }
