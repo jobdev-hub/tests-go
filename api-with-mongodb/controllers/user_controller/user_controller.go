@@ -13,6 +13,7 @@ const (
 
 func Routers(router *gin.Engine) {
 	router.GET(endpoint, GetAll)
+	router.GET(endpoint+"/:id", GetById)
 	router.POST(endpoint, InsertOne)
 	router.PUT(endpoint+"/:id", UpdateOne)
 	router.DELETE(endpoint+"/:id", DeleteOne)
@@ -30,6 +31,19 @@ func GetAll(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"data": users})
+}
+
+func GetById(c *gin.Context) {
+
+	id := c.Param("id")
+
+	user, err := user_service.ReadByID(id)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"data": user})
 }
 
 func InsertOne(c *gin.Context) {
