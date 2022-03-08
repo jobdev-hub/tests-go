@@ -3,10 +3,23 @@ package user_service
 import (
 	"api-with-mongodb/models"
 	"api-with-mongodb/repositories/user_repository"
+	"time"
+)
+
+var (
+	now = time.Now()
 )
 
 func Create(user models.User) error {
-	err := user_repository.Create(user)
+
+	err := models.VerifyFields(user)
+	if err != nil {
+		return err
+	}
+
+	user.CreatedAt = now
+
+	err = user_repository.Create(user)
 	if err != nil {
 		return err
 	}
@@ -24,6 +37,9 @@ func Read() (models.Users, error) {
 }
 
 func Update(user models.User, userId string) error {
+
+	user.UpdatedAt = now
+
 	err := user_repository.Update(user, userId)
 	if err != nil {
 		return err
