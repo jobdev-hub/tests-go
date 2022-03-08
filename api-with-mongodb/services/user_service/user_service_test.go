@@ -38,11 +38,41 @@ func TestRead(t *testing.T) {
 	if err != nil {
 		t.Error("Erro de leitura", err)
 		t.Fail()
+		return
+	}
+
+	if len(users) == 0 {
+		t.Log("Nenhum usuário encontrado")
+		return
+	}
+	t.Log("Usuário(s) encontrado(s): ", len(users))
+}
+
+func TestReadByID(t *testing.T) {
+
+	users, err := user_service.Read()
+	if err != nil {
+		t.Error("Erro de leitura", err)
+		t.Fail()
+		return
 	}
 	if len(users) == 0 {
 		t.Log("Nenhum usuário encontrado")
+		return
+	}
+
+	userId = users[0].ID.Hex()
+
+	user, err := user_service.ReadByID(userId)
+	if err != nil {
+		t.Error("Erro de leitura", err)
+		t.Fail()
+	}
+	if user.ID.Hex() != userId {
+		t.Error("Usuário não encontrado")
+		t.Fail()
 	} else {
-		t.Log("Usuário(s) encontrado(s): ", len(users))
+		t.Log("Usuário encontrado: ", user)
 	}
 
 }
