@@ -11,7 +11,7 @@ type User struct {
 	Name      string             `json:"name"`
 	Email     string             `json:"email"`
 	CreatedAt time.Time          `bson:"created_at,omitempty" json:"created_at,omitempty"`
-	UpdatedAt time.Time          `bson:"updated_at,omitempty" json:"updated_at,omitempty"`
+	UpdatedAt *time.Time         `bson:"updated_at,omitempty" json:"updated_at,omitempty"`
 }
 
 type Users []*User
