@@ -9,8 +9,10 @@ import (
 	"time"
 )
 
-var collection = mongodb.GetCollection("users")
-var ctx = context.Background()
+var (
+	collection = mongodb.GetCollection("users")
+	ctx        = context.Background()
+)
 
 func Create(user models.User) error {
 
@@ -42,6 +44,23 @@ func Read() (models.Users, error) {
 	}
 
 	return users, nil
+}
+
+func ReadByID(id string) (models.User, error) {
+
+	var user models.User
+	objectID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return user, err
+	}
+
+	filter := bson.D{{"_id", objectID}}
+	err = collection.FindOne(ctx, filter).Decode(&user)
+	if err != nil {
+		return user, err
+	}
+
+	return user, nil
 }
 
 func Update(user models.User, userId string) error {
