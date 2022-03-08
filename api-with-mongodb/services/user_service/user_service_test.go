@@ -35,29 +35,17 @@ func TestCreate(t *testing.T) {
 func TestRead(t *testing.T) {
 
 	users, err := user_service.Read()
-	if err != nil {
-		t.Error("Erro de leitura", err)
-		t.Fail()
+	if HandleRead(t, err, users) {
 		return
 	}
 
-	if len(users) == 0 {
-		t.Log("Nenhum usuário encontrado")
-		return
-	}
 	t.Log("Usuário(s) encontrado(s): ", len(users))
 }
 
 func TestReadByID(t *testing.T) {
 
 	users, err := user_service.Read()
-	if err != nil {
-		t.Error("Erro de leitura", err)
-		t.Fail()
-		return
-	}
-	if len(users) == 0 {
-		t.Log("Nenhum usuário encontrado")
+	if HandleRead(t, err, users) {
 		return
 	}
 
@@ -67,14 +55,16 @@ func TestReadByID(t *testing.T) {
 	if err != nil {
 		t.Error("Erro de leitura", err)
 		t.Fail()
+		return
 	}
+
 	if user.ID.Hex() != userId {
 		t.Error("Usuário não encontrado")
 		t.Fail()
-	} else {
-		t.Log("Usuário encontrado: ", user)
+		return
 	}
 
+	t.Log("Usuário encontrado: ", user)
 }
 
 func TestUpdate(t *testing.T) {
@@ -104,4 +94,17 @@ func TestDelete(t *testing.T) {
 		t.Log("Usuário excluído com sucesso")
 	}
 
+}
+
+func HandleRead(t *testing.T, err error, users models.Users) bool {
+	if err != nil {
+		t.Error("Erro de leitura", err)
+		t.Fail()
+		return true
+	}
+	if len(users) == 0 {
+		t.Log("Nenhum usuário encontrado")
+		return true
+	}
+	return false
 }
