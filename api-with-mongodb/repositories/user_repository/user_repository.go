@@ -12,11 +12,14 @@ import (
 var (
 	collection = mongodb.GetCollection("users")
 	ctx        = context.Background()
+	now        = time.Now()
 )
 
 func Create(user models.User) error {
 
+	user.CreatedAt = now
 	var err error
+
 	_, err = collection.InsertOne(ctx, user)
 	if err != nil {
 		return err
@@ -72,7 +75,7 @@ func Update(user models.User, userId string) error {
 		"$set": bson.M{
 			"name":       user.Name,
 			"email":      user.Email,
-			"updated_at": time.Now(),
+			"updated_at": now,
 		},
 	}
 
