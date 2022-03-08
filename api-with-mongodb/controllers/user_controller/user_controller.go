@@ -5,7 +5,6 @@ import (
 	"api-with-mongodb/services/user_service"
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"time"
 )
 
 const (
@@ -41,7 +40,6 @@ func InsertOne(c *gin.Context) {
 		return
 	}
 
-	user.CreatedAt = time.Now()
 	if err := user_service.Create(user); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -59,7 +57,6 @@ func UpdateOne(c *gin.Context) {
 	}
 
 	id := c.Param("id")
-	user.UpdatedAt = time.Now()
 	if err := user_service.Update(user, id); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
