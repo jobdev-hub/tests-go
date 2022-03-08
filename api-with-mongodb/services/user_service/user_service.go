@@ -36,6 +36,15 @@ func Read() (models.Users, error) {
 	return users, nil
 }
 
+func ReadByID(id string) (models.User, error) {
+	user, err := user_repository.ReadByID(id)
+	if err != nil {
+		return models.User{}, err
+	}
+
+	return user, nil
+}
+
 func Update(user models.User, userId string) error {
 
 	user.UpdatedAt = now
