@@ -3,11 +3,6 @@ package user_service
 import (
 	"api-with-mongodb/models"
 	"api-with-mongodb/repositories/user_repository"
-	"time"
-)
-
-var (
-	now = time.Now()
 )
 
 func Create(user models.User) error {
@@ -16,8 +11,6 @@ func Create(user models.User) error {
 	if err != nil {
 		return err
 	}
-
-	user.CreatedAt = now
 
 	err = user_repository.Create(user)
 	if err != nil {
@@ -46,8 +39,6 @@ func ReadByID(id string) (models.User, error) {
 }
 
 func Update(user models.User, userId string) error {
-
-	user.UpdatedAt = now
 
 	err := user_repository.Update(user, userId)
 	if err != nil {
