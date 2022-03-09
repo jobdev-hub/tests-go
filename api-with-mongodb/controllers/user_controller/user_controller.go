@@ -16,6 +16,7 @@ func BuildRouters(router *gin.Engine) {
 	router.GET(endpoint+"/:id", FindOneByID)
 	router.POST(endpoint, InsertOne)
 	router.PUT(endpoint+"/:id", UpdateOne)
+	router.PUT(endpoint+"/inactivate/:id", InactivateOne)
 	router.DELETE(endpoint+"/:id", DeleteOne)
 }
 
@@ -71,7 +72,18 @@ func UpdateOne(c *gin.Context) {
 	}
 
 	id := c.Param("id")
-	if err := user_service.Update(user, id); err != nil {
+	if err := user_service.UpdateOne(user, id); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"data": "User updated successfully"})
+}
+
+func InactivateOne(c *gin.Context) {
+
+	id := c.Param("id")
+	if err := user_service.InactivateOne(id); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}

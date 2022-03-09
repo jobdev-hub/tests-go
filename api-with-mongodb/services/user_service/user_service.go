@@ -3,6 +3,8 @@ package user_service
 import (
 	"api-with-mongodb/models"
 	"api-with-mongodb/repositories/user_repository"
+	"go.mongodb.org/mongo-driver/bson"
+	"time"
 )
 
 func FindMany() (models.Users, error) {
@@ -65,9 +67,16 @@ func UpdateOne(user models.User, userId string) error {
 	return nil
 }
 
-func Update(user models.User, userId string) error {
+func InactivateOne(userId string) error {
 
-	err := user_repository.Update(user, userId)
+	update := bson.M{
+		"$set": bson.M{
+			"active":     false,
+			"updated_at": time.Now(),
+		},
+	}
+
+	err := user_repository.UpdateOne(userId, update)
 	if err != nil {
 		return err
 	}
