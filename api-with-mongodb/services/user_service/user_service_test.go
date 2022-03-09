@@ -22,7 +22,7 @@ func TestCreate(t *testing.T) {
 		CreatedAt: time.Now(),
 	}
 
-	err := user_service.Create(user)
+	err := user_service.InsertOne(user)
 	if err != nil {
 		t.Error("Erro de persitência", err)
 		t.Fail()
@@ -34,7 +34,7 @@ func TestCreate(t *testing.T) {
 
 func TestRead(t *testing.T) {
 
-	users, err := user_service.Read()
+	users, err := user_service.FindMany()
 	if HandleRead(t, err, users) {
 		return
 	}
@@ -44,14 +44,14 @@ func TestRead(t *testing.T) {
 
 func TestReadByID(t *testing.T) {
 
-	users, err := user_service.Read()
+	users, err := user_service.FindMany()
 	if HandleRead(t, err, users) {
 		return
 	}
 
 	userId = users[0].ID.Hex()
 
-	user, err := user_service.ReadByID(userId)
+	user, err := user_service.FindOneByID(userId)
 	if err != nil {
 		t.Error("Erro de leitura", err)
 		t.Fail()
@@ -74,7 +74,7 @@ func TestUpdate(t *testing.T) {
 		Email: "email@atualizado.com",
 	}
 
-	err := user_service.Update(user, userId)
+	err := user_service.UpdateOne(user, userId)
 	if err != nil {
 		t.Error("Erro de atualização", err)
 		t.Fail()
@@ -86,7 +86,7 @@ func TestUpdate(t *testing.T) {
 
 func TestDelete(t *testing.T) {
 
-	err := user_service.Delete(userId)
+	err := user_service.DeleteOne(userId)
 	if err != nil {
 		t.Error("Erro de exclusão", err)
 		t.Fail()
