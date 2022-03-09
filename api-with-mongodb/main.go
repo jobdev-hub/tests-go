@@ -7,7 +7,7 @@ import (
 
 func main() {
 	router := gin.Default()
-	user_controller.BuildRouters(router)
+	user_controller.BuildRoutes(router)
 
 	err := router.Run("localhost:8080")
 	if err != nil {

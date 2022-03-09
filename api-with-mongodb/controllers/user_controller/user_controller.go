@@ -11,7 +11,7 @@ const (
 	endpoint = "/users"
 )
 
-func BuildRouters(router *gin.Engine) {
+func BuildRoutes(router *gin.Engine) {
 	router.GET(endpoint, FindMany)
 	router.GET(endpoint+"/:id", FindOneByID)
 	router.POST(endpoint, InsertOne)
