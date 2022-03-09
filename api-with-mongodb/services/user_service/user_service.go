@@ -5,23 +5,8 @@ import (
 	"api-with-mongodb/repositories/user_repository"
 )
 
-func Create(user models.User) error {
-
-	err := models.VerifyFields(user)
-	if err != nil {
-		return err
-	}
-
-	err = user_repository.Create(user)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func Read() (models.Users, error) {
-	users, err := user_repository.Read()
+func FindMany() (models.Users, error) {
+	users, err := user_repository.FindMany()
 	if err != nil {
 		return nil, err
 	}
@@ -29,13 +14,55 @@ func Read() (models.Users, error) {
 	return users, nil
 }
 
-func ReadByID(id string) (models.User, error) {
-	user, err := user_repository.ReadByID(id)
+func FindOneByID(id string) (models.User, error) {
+	user, err := user_repository.FindOneByID(id)
 	if err != nil {
 		return models.User{}, err
 	}
 
 	return user, nil
+}
+
+func InsertOne(user models.User) error {
+
+	err := models.CheckFields(user)
+	if err != nil {
+		return err
+	}
+
+	user.CreatedAt = time.Now()
+	user.Active = true
+
+	err = user_repository.InsertOne(user)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func UpdateOne(user models.User, userId string) error {
+
+	err := models.CheckFields(user)
+	if err != nil {
+		return err
+	}
+
+	update := bson.M{
+		"$set": bson.M{
+			"name":       user.Name,
+			"email":      user.Email,
+			"roles":      user.Roles,
+			"updated_at": time.Now(),
+		},
+	}
+
+	err = user_repository.UpdateOne(userId, update)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func Update(user models.User, userId string) error {
@@ -48,8 +75,8 @@ func Update(user models.User, userId string) error {
 	return nil
 }
 
-func Delete(userId string) error {
-	err := user_repository.Delete(userId)
+func DeleteOne(userId string) error {
+	err := user_repository.DeleteOne(userId)
 	if err != nil {
 		return err
 	}

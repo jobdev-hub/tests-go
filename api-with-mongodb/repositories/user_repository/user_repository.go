@@ -6,29 +6,14 @@ import (
 	"context"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"time"
 )
 
 var (
 	collection = mongodb.GetCollection("users")
 	ctx        = context.Background()
-	now        = time.Now()
 )
 
-func Create(user models.User) error {
-
-	user.CreatedAt = now
-	var err error
-
-	_, err = collection.InsertOne(ctx, user)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func Read() (models.Users, error) {
+func FindMany() (models.Users, error) {
 
 	var users models.Users
 	filter := bson.D{}
@@ -49,7 +34,7 @@ func Read() (models.Users, error) {
 	return users, nil
 }
 
-func ReadByID(id string) (models.User, error) {
+func FindOneByID(id string) (models.User, error) {
 
 	var user models.User
 	objectID, err := primitive.ObjectIDFromHex(id)
@@ -66,20 +51,9 @@ func ReadByID(id string) (models.User, error) {
 	return user, nil
 }
 
-func Update(user models.User, userId string) error {
+func InsertOne(user models.User) error {
 
-	var err error
-	oid, _ := primitive.ObjectIDFromHex(userId)
-	filter := bson.M{"_id": oid}
-	update := bson.M{
-		"$set": bson.M{
-			"name":       user.Name,
-			"email":      user.Email,
-			"updated_at": now,
-		},
-	}
-
-	_, err = collection.UpdateOne(ctx, filter, update)
+	_, err := collection.InsertOne(ctx, user)
 	if err != nil {
 		return err
 	}
@@ -87,7 +61,19 @@ func Update(user models.User, userId string) error {
 	return nil
 }
 
-func Delete(userId string) error {
+func UpdateOne(userId string, update bson.M) error {
+	oid, _ := primitive.ObjectIDFromHex(userId)
+	filter := bson.M{"_id": oid}
+
+	var err error
+	_, err = collection.UpdateOne(ctx, filter, update)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func DeleteOne(userId string) error {
 
 	var err error
 	var oid primitive.ObjectID

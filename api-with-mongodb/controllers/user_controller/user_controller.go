@@ -11,17 +11,17 @@ const (
 	endpoint = "/users"
 )
 
-func Routers(router *gin.Engine) {
-	router.GET(endpoint, GetAll)
-	router.GET(endpoint+"/:id", GetById)
+func BuildRouters(router *gin.Engine) {
+	router.GET(endpoint, FindMany)
+	router.GET(endpoint+"/:id", FindOneByID)
 	router.POST(endpoint, InsertOne)
 	router.PUT(endpoint+"/:id", UpdateOne)
 	router.DELETE(endpoint+"/:id", DeleteOne)
 }
 
-func GetAll(c *gin.Context) {
+func FindMany(c *gin.Context) {
 
-	users, err := user_service.Read()
+	users, err := user_service.FindMany()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -33,11 +33,11 @@ func GetAll(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"data": users})
 }
 
-func GetById(c *gin.Context) {
+func FindOneByID(c *gin.Context) {
 
 	id := c.Param("id")
 
-	user, err := user_service.ReadByID(id)
+	user, err := user_service.FindOneByID(id)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -54,7 +54,7 @@ func InsertOne(c *gin.Context) {
 		return
 	}
 
-	if err := user_service.Create(user); err != nil {
+	if err := user_service.InsertOne(user); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -82,7 +82,7 @@ func UpdateOne(c *gin.Context) {
 func DeleteOne(c *gin.Context) {
 
 	id := c.Param("id")
-	if err := user_service.Delete(id); err != nil {
+	if err := user_service.DeleteOne(id); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
