@@ -22,8 +22,10 @@ func TestInsertOne(t *testing.T) {
 		Roles: []string{
 			"TestInsertOne",
 		},
+		Active:    new(bool),
 		CreatedAt: time.Now(),
 	}
+	*user.Active = true
 
 	err := user_service.InsertOne(user)
 	if err != nil {

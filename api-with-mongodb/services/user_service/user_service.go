@@ -34,9 +34,6 @@ func InsertOne(user models.User) error {
 
 	user.CreatedAt = time.Now()
 
-	user.Active = new(bool)
-	*user.Active = true
-
 	err = user_repository.InsertOne(user)
 	if err != nil {
 		return err

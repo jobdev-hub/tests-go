@@ -36,6 +36,10 @@ func CheckFieldsToInsert(user User) error {
 		err = append(err, "roles")
 	}
 
+	if user.Active == nil {
+		err = append(err, "active")
+	}
+
 	if err != nil {
 		return errors.New("[" + strings.Join(err, ", ") + "] is required")
 	}
