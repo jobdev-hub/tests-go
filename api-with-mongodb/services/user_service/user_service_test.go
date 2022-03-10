@@ -10,15 +10,18 @@ import (
 
 var userId string
 
-func TestCreate(t *testing.T) {
+func TestInsertOne(t *testing.T) {
 
 	oid := primitive.NewObjectID()
 	userId = oid.Hex()
 
 	user := models.User{
-		ID:        oid,
-		Name:      "Nome Teste",
-		Email:     "email@teste.com",
+		ID:    oid,
+		Name:  "TestInsertOne",
+		Email: "TestInsertOne@test.com",
+		Roles: []string{
+			"TestInsertOne",
+		},
 		CreatedAt: time.Now(),
 	}
 
@@ -28,28 +31,41 @@ func TestCreate(t *testing.T) {
 		t.Fail()
 	} else {
 		t.Log("Usuário criado com sucesso")
+		t.Log(user.ID)
+		userId = user.ID.Hex()
 	}
 
 }
 
-func TestRead(t *testing.T) {
+func TestFindMany(t *testing.T) {
 
 	users, err := user_service.FindMany()
-	if HandleRead(t, err, users) {
+
+	if err != nil {
+		t.Error("Erro de leitura", err)
+		t.Fail()
+		return
+	}
+	if len(users) == 0 {
+		t.Log("Nenhum usuário encontrado")
 		return
 	}
 
 	t.Log("Usuário(s) encontrado(s): ", len(users))
 }
 
-func TestReadByID(t *testing.T) {
+func TestFindOneByID(t *testing.T) {
 
 	users, err := user_service.FindMany()
-	if HandleRead(t, err, users) {
+	if err != nil {
+		t.Error("Erro de leitura", err)
+		t.Fail()
 		return
 	}
-
-	userId = users[0].ID.Hex()
+	if len(users) == 0 {
+		t.Log("Nenhum usuário encontrado")
+		return
+	}
 
 	user, err := user_service.FindOneByID(userId)
 	if err != nil {
@@ -67,11 +83,10 @@ func TestReadByID(t *testing.T) {
 	t.Log("Usuário encontrado: ", user)
 }
 
-func TestUpdate(t *testing.T) {
+func TestUpdateOne_NameField(t *testing.T) {
 
 	user := models.User{
-		Name:  "Nome Teste Atualizado",
-		Email: "email@atualizado.com",
+		Name: "TestUpdateOne_NameField",
 	}
 
 	err := user_service.UpdateOne(user, userId)
@@ -80,11 +95,91 @@ func TestUpdate(t *testing.T) {
 		t.Fail()
 	} else {
 		t.Log("Usuário atualizado com sucesso")
+		t.Log(userId)
 	}
 
 }
 
-func TestDelete(t *testing.T) {
+func TestUpdateOne_EmailField(t *testing.T) {
+
+	user := models.User{
+		Email: "TestUpdateOne_NameField@test.com",
+	}
+
+	err := user_service.UpdateOne(user, userId)
+	if err != nil {
+		t.Error("Erro de atualização", err)
+		t.Fail()
+	} else {
+		t.Log("Usuário atualizado com sucesso")
+		t.Log(userId)
+	}
+
+}
+
+func TestUpdateOne_RolesField(t *testing.T) {
+
+	user := models.User{
+		Roles: []string{
+			"TestUpdateOne_RolesField",
+		},
+	}
+
+	err := user_service.UpdateOne(user, userId)
+	if err != nil {
+		t.Error("Erro de atualização", err)
+		t.Fail()
+	} else {
+		t.Log("Usuário atualizado com sucesso")
+		t.Log(userId)
+	}
+
+}
+
+func TestUpdateOne_ActiveField(t *testing.T) {
+
+	user := models.User{
+		Active: new(bool),
+	}
+	*user.Active = true
+
+	err := user_service.UpdateOne(user, userId)
+	if err != nil {
+		t.Error("Erro de atualização", err)
+		t.Fail()
+	} else {
+		t.Log("Usuário atualizado com sucesso")
+		t.Log(userId)
+	}
+
+}
+
+func TestUpdateOne_AllFieldsEditableByClient(t *testing.T) {
+
+	user := models.User{
+		Name:  "TestUpdateOne_AllFieldsEditableByClient",
+		Email: "TestUpdateOne_AllFieldsEditableByClient@test.com",
+		Roles: []string{
+			"TestUpdateOne_AllFieldsEditableByClient",
+		},
+		Active:    new(bool),
+		UpdatedAt: new(time.Time),
+	}
+	*user.Active = true
+	*user.UpdatedAt = time.Now()
+
+	err := user_service.UpdateOne(user, userId)
+	if err != nil {
+		t.Error("Erro de atualização", err)
+		t.Fail()
+	} else {
+		t.Log("Usuário atualizado com sucesso")
+		t.Log(userId)
+	}
+
+}
+
+func TestDeleteOne(t *testing.T) {
 
 	err := user_service.DeleteOne(userId)
 	if err != nil {
@@ -92,19 +187,7 @@ func TestDelete(t *testing.T) {
 		t.Fail()
 	} else {
 		t.Log("Usuário excluído com sucesso")
+		t.Log(userId)
 	}
 
-}
-
-func HandleRead(t *testing.T, err error, users models.Users) bool {
-	if err != nil {
-		t.Error("Erro de leitura", err)
-		t.Fail()
-		return true
-	}
-	if len(users) == 0 {
-		t.Log("Nenhum usuário encontrado")
-		return true
-	}
-	return false
 }
