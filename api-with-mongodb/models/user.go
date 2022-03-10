@@ -2,6 +2,7 @@ package models
 
 import (
 	"errors"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"strings"
 	"time"
@@ -12,14 +13,14 @@ type User struct {
 	Name      string             `json:"name"`
 	Email     string             `json:"email"`
 	Roles     []string           `json:"roles"`
-	Active    bool               `json:"active"`
+	Active    *bool              `json:"active"`
 	CreatedAt time.Time          `bson:"created_at,omitempty" json:"created_at,omitempty"`
 	UpdatedAt *time.Time         `bson:"updated_at,omitempty" json:"updated_at,omitempty"`
 }
 
 type Users []*User
 
-func CheckFields(user User) error {
+func CheckFieldsToInsert(user User) error {
 
 	var err []string
 
@@ -40,4 +41,38 @@ func CheckFields(user User) error {
 	}
 
 	return nil
+}
+
+func CheckFieldsToUpdate(user User) (bson.M, error) {
+
+	update := bson.M{"$set": bson.M{}}
+
+	count := 0
+
+	if user.Name != "" {
+		update["$set"].(bson.M)["name"] = user.Name
+		count++
+	}
+
+	if user.Email != "" {
+		update["$set"].(bson.M)["email"] = user.Email
+		count++
+	}
+
+	if user.Roles != nil {
+		update["$set"].(bson.M)["roles"] = user.Roles
+		count++
+	}
+
+	if user.Active != nil {
+		update["$set"].(bson.M)["active"] = user.Active
+		count++
+	}
+
+	if count == 0 {
+		return nil, errors.New("no field identified to update, check body the request")
+	}
+
+	return update, nil
+
 }

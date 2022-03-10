@@ -27,13 +27,15 @@ func FindOneByID(id string) (models.User, error) {
 
 func InsertOne(user models.User) error {
 
-	err := models.CheckFields(user)
+	err := models.CheckFieldsToInsert(user)
 	if err != nil {
 		return err
 	}
 
 	user.CreatedAt = time.Now()
-	user.Active = true
+
+	user.Active = new(bool)
+	*user.Active = true
 
 	err = user_repository.InsertOne(user)
 	if err != nil {
@@ -45,19 +47,12 @@ func InsertOne(user models.User) error {
 
 func UpdateOne(user models.User, userId string) error {
 
-	err := models.CheckFields(user)
+	update, err := models.CheckFieldsToUpdate(user)
 	if err != nil {
 		return err
 	}
 
-	update := bson.M{
-		"$set": bson.M{
-			"name":       user.Name,
-			"email":      user.Email,
-			"roles":      user.Roles,
-			"updated_at": time.Now(),
-		},
-	}
+	update["$set"].(bson.M)["updated_at"] = time.Now()
 
 	err = user_repository.UpdateOne(userId, update)
 	if err != nil {
