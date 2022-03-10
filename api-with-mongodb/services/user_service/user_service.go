@@ -62,23 +62,6 @@ func UpdateOne(user models.User, userId string) error {
 	return nil
 }
 
-func InactivateOne(userId string) error {
-
-	update := bson.M{
-		"$set": bson.M{
-			"active":     false,
-			"updated_at": time.Now(),
-		},
-	}
-
-	err := user_repository.UpdateOne(userId, update)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
 func DeleteOne(userId string) error {
 	err := user_repository.DeleteOne(userId)
 	if err != nil {
