@@ -51,6 +51,11 @@ func UpdateOne(user models.User, userId string) error {
 
 	update["$set"].(bson.M)["updated_at"] = time.Now()
 
+	_, err = user_repository.FindOneByID(userId)
+	if err != nil {
+		return err
+	}
+
 	err = user_repository.UpdateOne(userId, update)
 	if err != nil {
 		return err
@@ -60,7 +65,13 @@ func UpdateOne(user models.User, userId string) error {
 }
 
 func DeleteOne(userId string) error {
-	err := user_repository.DeleteOne(userId)
+
+	_, err := user_repository.FindOneByID(userId)
+	if err != nil {
+		return err
+	}
+
+	err = user_repository.DeleteOne(userId)
 	if err != nil {
 		return err
 	}
