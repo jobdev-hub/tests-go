@@ -32,7 +32,7 @@ func CheckFieldsToInsert(user User) error {
 		err = append(err, "email")
 	}
 
-	if user.Roles == nil {
+	if user.Roles == nil || len(user.Roles) == 0 {
 		err = append(err, "roles")
 	}
 
@@ -45,12 +45,16 @@ func CheckFieldsToInsert(user User) error {
 	}
 
 	return nil
+
 }
 
 func CheckFieldsToUpdate(user User) (bson.M, error) {
 
-	update := bson.M{"$set": bson.M{}}
+	if user.Roles != nil && len(user.Roles) == 0 {
+		return nil, errors.New("rules field needs at least 1 value to be updated")
+	}
 
+	update := bson.M{"$set": bson.M{}}
 	count := 0
 
 	if user.Name != "" {
@@ -63,7 +67,7 @@ func CheckFieldsToUpdate(user User) (bson.M, error) {
 		count++
 	}
 
-	if user.Roles != nil {
+	if user.Roles != nil && len(user.Roles) > 0 {
 		update["$set"].(bson.M)["roles"] = user.Roles
 		count++
 	}
