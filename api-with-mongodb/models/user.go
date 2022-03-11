@@ -2,6 +2,7 @@ package models
 
 import (
 	"errors"
+	"fmt"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"strings"
@@ -9,13 +10,13 @@ import (
 )
 
 type User struct {
-	ID        primitive.ObjectID `bson:"_id,omitempty" json:"id,omitempty"`
-	Name      string             `json:"name"`
-	Email     string             `json:"email"`
-	Roles     []string           `json:"roles"`
-	Active    *bool              `json:"active"`
-	CreatedAt time.Time          `bson:"created_at,omitempty" json:"created_at,omitempty"`
-	UpdatedAt *time.Time         `bson:"updated_at,omitempty" json:"updated_at,omitempty"`
+	ID        *primitive.ObjectID `bson:"_id,omitempty" json:"id,omitempty"`
+	Name      string              `json:"name"`
+	Email     string              `json:"email"`
+	Roles     []string            `json:"roles"`
+	Active    *bool               `json:"active"`
+	CreatedAt time.Time           `bson:"created_at,omitempty" json:"created_at,omitempty"`
+	UpdatedAt *time.Time          `bson:"updated_at,omitempty" json:"updated_at,omitempty"`
 }
 
 type Users []*User
@@ -48,11 +49,42 @@ func CheckFieldsToInsert(user User) error {
 
 }
 
-func CheckFieldsToUpdate(user User) (bson.M, error) {
+//todo: alterar para retornar []string
+//example: CheckFieldsToInsert
+func CheckFieldsValues(user User) error {
+
+	const (
+		//user.Name
+		minNameLength = 3
+		maxNameLength = 50
+		msgNameLength = "name must be between %d and %d characters"
+
+		//user.Email
+		minEmailLength = 5
+		maxEmailLength = 50
+		msgEmailLength = "email must be between %d and %d characters"
+
+		//user.Rules
+		msgRulesLength = "rules field needs at least 1 value to be updated"
+	)
+
+	if user.Name != "" && (len(user.Name) < minNameLength || len(user.Name) > maxNameLength) {
+		return errors.New(fmt.Sprintf(msgNameLength, minNameLength, maxNameLength))
+	}
+
+	if user.Email != "" && (len(user.Email) < minEmailLength || len(user.Email) > maxEmailLength) {
+		return errors.New(fmt.Sprintf(msgEmailLength, minEmailLength, maxEmailLength))
+	}
 
 	if user.Roles != nil && len(user.Roles) == 0 {
-		return nil, errors.New("rules field needs at least 1 value to be updated")
+		return errors.New(msgRulesLength)
 	}
+
+	return nil
+
+}
+
+func CheckFieldsToUpdate(user User) (bson.M, error) {
 
 	update := bson.M{"$set": bson.M{}}
 	count := 0

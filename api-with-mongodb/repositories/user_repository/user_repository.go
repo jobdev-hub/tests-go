@@ -4,6 +4,7 @@ import (
 	"api-with-mongodb/configs/mongodb"
 	"api-with-mongodb/models"
 	"context"
+	"errors"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
@@ -89,4 +90,18 @@ func DeleteOne(userId string) error {
 	}
 
 	return nil
+}
+
+func CheckEmailUnique(email string, userID string) error {
+
+	var user models.User
+
+	collection.FindOne(ctx, bson.M{"email": email}).Decode(&user)
+
+	if user.ID != nil && user.ID.Hex() != userID {
+		return errors.New("email already exists to userID: " + user.ID.Hex())
+	}
+
+	return nil
+
 }

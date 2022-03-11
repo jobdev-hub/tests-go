@@ -7,6 +7,9 @@ import (
 	"time"
 )
 
+//todo: remove CheckRequest* and return http.status to controller
+//todo: check http.status of 500 for 400
+
 func FindMany() (models.Users, error) {
 	users, err := user_repository.FindMany()
 	if err != nil {
@@ -25,17 +28,42 @@ func FindOneByID(id string) (models.User, error) {
 	return user, nil
 }
 
+func CheckRequestInsertOne(user models.User) error {
+
+	if err := models.CheckFieldsToInsert(user); err != nil {
+		return err
+	}
+
+	if err := models.CheckFieldsValues(user); err != nil {
+		return err
+	}
+
+	if err := user_repository.CheckEmailUnique(user.Email, ""); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func InsertOne(user models.User) error {
 
-	err := models.CheckFieldsToInsert(user)
+	user.CreatedAt = time.Now()
+
+	err := user_repository.InsertOne(user)
 	if err != nil {
 		return err
 	}
 
-	user.CreatedAt = time.Now()
+	return nil
+}
 
-	err = user_repository.InsertOne(user)
-	if err != nil {
+func CheckRequestUpdateOne(user models.User, userId string) error {
+
+	if err := models.CheckFieldsValues(user); err != nil {
+		return err
+	}
+
+	if err := user_repository.CheckEmailUnique(user.Email, userId); err != nil {
 		return err
 	}
 

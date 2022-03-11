@@ -54,6 +54,11 @@ func InsertOne(c *gin.Context) {
 		return
 	}
 
+	if err := user_service.CheckRequestInsertOne(user); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
 	if err := user_service.InsertOne(user); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -71,6 +76,12 @@ func UpdateOne(c *gin.Context) {
 	}
 
 	id := c.Param("id")
+
+	if err := user_service.CheckRequestUpdateOne(user, id); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
 	if err := user_service.UpdateOne(user, id); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

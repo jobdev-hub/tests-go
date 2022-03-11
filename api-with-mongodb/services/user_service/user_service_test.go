@@ -16,7 +16,7 @@ func TestInsertOne(t *testing.T) {
 	userId = oid.Hex()
 
 	user := models.User{
-		ID:    oid,
+		ID:    new(primitive.ObjectID),
 		Name:  "TestInsertOne",
 		Email: "TestInsertOne@test.com",
 		Roles: []string{
@@ -25,6 +25,7 @@ func TestInsertOne(t *testing.T) {
 		Active:    new(bool),
 		CreatedAt: time.Now(),
 	}
+	*user.ID = oid
 	*user.Active = true
 
 	err := user_service.InsertOne(user)
