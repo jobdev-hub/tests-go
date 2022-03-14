@@ -96,12 +96,23 @@ func CheckEmailUnique(email string, userID string) error {
 
 	var user models.User
 
-	collection.FindOne(ctx, bson.M{"email": email}).Decode(&user)
+	filter := bson.M{"email": email}
+	count, err := collection.CountDocuments(ctx, filter)
+	if err != nil {
+		return err
+	}
 
-	if user.ID != nil && user.ID.Hex() != userID {
-		return errors.New("email already exists to userID: " + user.ID.Hex())
+	if count == 0 {
+		return nil
+	} else {
+		err := collection.FindOne(ctx, bson.M{"email": email}).Decode(&user)
+		if err != nil {
+			return err
+		}
+		if user.ID != nil && user.ID.Hex() != userID {
+			return errors.New("email already exists to userID: " + user.ID.Hex())
+		}
 	}
 
 	return nil
-
 }
