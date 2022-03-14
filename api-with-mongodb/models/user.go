@@ -49,8 +49,6 @@ func CheckFieldsToInsert(user User) error {
 
 }
 
-//todo: alterar para retornar []string
-//example: CheckFieldsToInsert
 func CheckFieldsValues(user User) error {
 
 	const (
@@ -68,16 +66,30 @@ func CheckFieldsValues(user User) error {
 		msgRulesLength = "rules field needs at least 1 value to be updated"
 	)
 
+	var err []string
+
 	if user.Name != "" && (len(user.Name) < minNameLength || len(user.Name) > maxNameLength) {
-		return errors.New(fmt.Sprintf(msgNameLength, minNameLength, maxNameLength))
+		err = append(err, fmt.Sprintf(msgNameLength, minNameLength, maxNameLength))
 	}
 
 	if user.Email != "" && (len(user.Email) < minEmailLength || len(user.Email) > maxEmailLength) {
-		return errors.New(fmt.Sprintf(msgEmailLength, minEmailLength, maxEmailLength))
+		err = append(err, fmt.Sprintf(msgEmailLength, minEmailLength, maxEmailLength))
 	}
 
 	if user.Roles != nil && len(user.Roles) == 0 {
-		return errors.New(msgRulesLength)
+		err = append(err, msgRulesLength)
+	} else {
+		count := 0
+		for i := 0; i < (len(user.Roles)-1) && count == 0; i++ {
+			if user.Roles[i] == "" {
+				err = append(err, "must not have empty rules")
+				count++
+			}
+		}
+	}
+
+	if err != nil {
+		return errors.New(strings.Join(err, ", "))
 	}
 
 	return nil
