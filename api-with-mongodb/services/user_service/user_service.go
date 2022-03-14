@@ -4,105 +4,106 @@ import (
 	"api-with-mongodb/models"
 	"api-with-mongodb/repositories/user_repository"
 	"go.mongodb.org/mongo-driver/bson"
+	"net/http"
 	"time"
 )
 
-//todo: remove CheckRequest* and return http.status to controller
-//todo: check http.status of 500 for 400
+func FindMany() (int, models.Users, error) {
 
-func FindMany() (models.Users, error) {
 	users, err := user_repository.FindMany()
 	if err != nil {
-		return nil, err
+		return http.StatusInternalServerError, nil, err
 	}
 
-	return users, nil
+	return http.StatusOK, users, nil
+
 }
 
-func FindOneByID(id string) (models.User, error) {
+func FindOneByID(id string) (int, models.User, error) {
+
 	user, err := user_repository.FindOneByID(id)
+
 	if err != nil {
-		return models.User{}, err
+		if err.Error() == "mongo: no documents in result" {
+			return http.StatusNotFound, models.User{}, err
+
+		} else if err.Error() == "the provided hex string is not a valid ObjectID" {
+			return http.StatusBadRequest, models.User{}, err
+
+		} else {
+			return http.StatusInternalServerError, models.User{}, err
+		}
 	}
 
-	return user, nil
+	return http.StatusOK, user, nil
+
 }
 
-func CheckRequestInsertOne(user models.User) error {
+func InsertOne(user models.User) (int, error) {
 
 	if err := models.CheckFieldsToInsert(user); err != nil {
-		return err
+		return http.StatusBadRequest, err
 	}
 
 	if err := models.CheckFieldsValues(user); err != nil {
-		return err
+		return http.StatusBadRequest, err
 	}
 
 	if err := user_repository.CheckEmailUnique(user.Email, ""); err != nil {
-		return err
+		return http.StatusBadRequest, err
 	}
-
-	return nil
-}
-
-func InsertOne(user models.User) error {
 
 	user.CreatedAt = time.Now()
 
 	err := user_repository.InsertOne(user)
 	if err != nil {
-		return err
+		return http.StatusInternalServerError, err
 	}
 
-	return nil
+	return http.StatusCreated, nil
 }
 
-func CheckRequestUpdateOne(user models.User, userId string) error {
+func UpdateOne(user models.User, userId string) (int, error) {
 
 	if err := models.CheckFieldsValues(user); err != nil {
-		return err
+		return http.StatusBadRequest, err
 	}
 
 	if err := user_repository.CheckEmailUnique(user.Email, userId); err != nil {
-		return err
+		return http.StatusBadRequest, err
 	}
-
-	return nil
-}
-
-func UpdateOne(user models.User, userId string) error {
 
 	update, err := models.CheckFieldsToUpdate(user)
 	if err != nil {
-		return err
+		return http.StatusBadRequest, err
 	}
 
 	update["$set"].(bson.M)["updated_at"] = time.Now()
 
 	_, err = user_repository.FindOneByID(userId)
 	if err != nil {
-		return err
+		return http.StatusInternalServerError, err
 	}
 
 	err = user_repository.UpdateOne(userId, update)
 	if err != nil {
-		return err
+		return http.StatusInternalServerError, err
 	}
 
-	return nil
+	return http.StatusOK, err
 }
 
-func DeleteOne(userId string) error {
+func DeleteOne(userId string) (int, error) {
 
 	_, err := user_repository.FindOneByID(userId)
 	if err != nil {
-		return err
+		return http.StatusBadRequest, err
 	}
 
 	err = user_repository.DeleteOne(userId)
 	if err != nil {
-		return err
+		return http.StatusInternalServerError, err
 	}
 
-	return nil
+	return http.StatusNoContent, nil
 }

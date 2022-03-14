@@ -28,12 +28,12 @@ func TestInsertOne(t *testing.T) {
 	*user.ID = oid
 	*user.Active = true
 
-	err := user_service.InsertOne(user)
+	sts, err := user_service.InsertOne(user)
 	if err != nil {
-		t.Error("Erro de persitência", err)
+		t.Error("Erro de persitência", " |", sts, "|", err)
 		t.Fail()
 	} else {
-		t.Log("Usuário criado com sucesso")
+		t.Log(" Usuário criado com sucesso", " |", sts, "|")
 		t.Log(user.ID)
 		userId = user.ID.Hex()
 	}
@@ -42,48 +42,48 @@ func TestInsertOne(t *testing.T) {
 
 func TestFindMany(t *testing.T) {
 
-	users, err := user_service.FindMany()
+	sts, users, err := user_service.FindMany()
 
 	if err != nil {
-		t.Error("Erro de leitura", err)
+		t.Error("Erro de leitura", " |", sts, "|", err)
 		t.Fail()
 		return
 	}
 	if len(users) == 0 {
-		t.Log("Nenhum usuário encontrado")
+		t.Log("Nenhum usuário encontrado", " |", sts, "|")
 		return
 	}
 
-	t.Log("Usuário(s) encontrado(s): ", len(users))
+	t.Log("Usuário(s) encontrado(s): ", len(users), " |", sts, "|")
 }
 
 func TestFindOneByID(t *testing.T) {
 
-	users, err := user_service.FindMany()
+	sts, users, err := user_service.FindMany()
 	if err != nil {
-		t.Error("Erro de leitura", err)
+		t.Error("Erro de leitura", " |", sts, "|", err)
 		t.Fail()
 		return
 	}
 	if len(users) == 0 {
-		t.Log("Nenhum usuário encontrado")
+		t.Log("Nenhum usuário encontrado", " |", sts, "|")
 		return
 	}
 
-	user, err := user_service.FindOneByID(userId)
+	sts, user, err := user_service.FindOneByID(userId)
 	if err != nil {
-		t.Error("Erro de leitura", err)
+		t.Error("Erro de leitura", " |", sts, "|", err)
 		t.Fail()
 		return
 	}
 
 	if user.ID.Hex() != userId {
-		t.Error("Usuário não encontrado")
+		t.Error("Usuário não encontrado", " |", sts, "|")
 		t.Fail()
 		return
 	}
 
-	t.Log("Usuário encontrado: ", user)
+	t.Log("Usuário encontrado: ", " |", sts, "|", user)
 }
 
 func TestUpdateOne_NameField(t *testing.T) {
@@ -92,12 +92,12 @@ func TestUpdateOne_NameField(t *testing.T) {
 		Name: "TestUpdateOne_NameField",
 	}
 
-	err := user_service.UpdateOne(user, userId)
+	sts, err := user_service.UpdateOne(user, userId)
 	if err != nil {
-		t.Error("Erro de atualização", err)
+		t.Error("Erro de atualização", " |", sts, "|", err)
 		t.Fail()
 	} else {
-		t.Log("Usuário atualizado com sucesso")
+		t.Log("Usuário atualizado com sucesso", " |", sts, "|")
 		t.Log(userId)
 	}
 
@@ -109,12 +109,12 @@ func TestUpdateOne_EmailField(t *testing.T) {
 		Email: "TestUpdateOne_NameField@test.com",
 	}
 
-	err := user_service.UpdateOne(user, userId)
+	sts, err := user_service.UpdateOne(user, userId)
 	if err != nil {
-		t.Error("Erro de atualização", err)
+		t.Error("Erro de atualização", " |", sts, "|", err)
 		t.Fail()
 	} else {
-		t.Log("Usuário atualizado com sucesso")
+		t.Log("Usuário atualizado com sucesso", " |", sts, "|")
 		t.Log(userId)
 	}
 
@@ -128,12 +128,12 @@ func TestUpdateOne_RolesField(t *testing.T) {
 		},
 	}
 
-	err := user_service.UpdateOne(user, userId)
+	sts, err := user_service.UpdateOne(user, userId)
 	if err != nil {
-		t.Error("Erro de atualização", err)
+		t.Error("Erro de atualização", " |", sts, "|", err)
 		t.Fail()
 	} else {
-		t.Log("Usuário atualizado com sucesso")
+		t.Log("Usuário atualizado com sucesso", " |", sts, "|")
 		t.Log(userId)
 	}
 
@@ -146,12 +146,12 @@ func TestUpdateOne_ActiveField(t *testing.T) {
 	}
 	*user.Active = true
 
-	err := user_service.UpdateOne(user, userId)
+	sts, err := user_service.UpdateOne(user, userId)
 	if err != nil {
-		t.Error("Erro de atualização", err)
+		t.Error("Erro de atualização", " |", sts, "|", err)
 		t.Fail()
 	} else {
-		t.Log("Usuário atualizado com sucesso")
+		t.Log("Usuário atualizado com sucesso", " |", sts, "|")
 		t.Log(userId)
 	}
 
@@ -171,12 +171,12 @@ func TestUpdateOne_AllFieldsEditableByClient(t *testing.T) {
 	*user.Active = true
 	*user.UpdatedAt = time.Now()
 
-	err := user_service.UpdateOne(user, userId)
+	sts, err := user_service.UpdateOne(user, userId)
 	if err != nil {
-		t.Error("Erro de atualização", err)
+		t.Error("Erro de atualização", " |", sts, "|", err)
 		t.Fail()
 	} else {
-		t.Log("Usuário atualizado com sucesso")
+		t.Log("Usuário atualizado com sucesso", " |", sts, "|")
 		t.Log(userId)
 	}
 
@@ -184,12 +184,12 @@ func TestUpdateOne_AllFieldsEditableByClient(t *testing.T) {
 
 func TestDeleteOne(t *testing.T) {
 
-	err := user_service.DeleteOne(userId)
+	sts, err := user_service.DeleteOne(userId)
 	if err != nil {
-		t.Error("Erro de exclusão", err)
+		t.Error("Erro de exclusão", " |", sts, "|", err)
 		t.Fail()
 	} else {
-		t.Log("Usuário excluído com sucesso")
+		t.Log("Usuário excluído com sucesso", " |", sts, "|")
 		t.Log(userId)
 	}
 

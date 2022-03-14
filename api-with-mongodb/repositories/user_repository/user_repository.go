@@ -50,6 +50,7 @@ func FindOneByID(id string) (models.User, error) {
 	}
 
 	return user, nil
+
 }
 
 func InsertOne(user models.User) error {
