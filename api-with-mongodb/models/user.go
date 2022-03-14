@@ -80,7 +80,7 @@ func CheckFieldsValues(user User) error {
 		err = append(err, msgRulesLength)
 	} else {
 		count := 0
-		for i := 0; i < (len(user.Roles)-1) && count == 0; i++ {
+		for i := 0; i < len(user.Roles) && count == 0; i++ {
 			if user.Roles[i] == "" {
 				err = append(err, "must not have empty rules")
 				count++
