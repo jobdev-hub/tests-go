@@ -14,6 +14,10 @@ var (
 	ctx        = context.Background()
 )
 
+func IsConnected() error {
+	return collection.Database().Client().Ping(ctx, nil)
+}
+
 func FindMany() (models.Users, error) {
 
 	var users models.Users

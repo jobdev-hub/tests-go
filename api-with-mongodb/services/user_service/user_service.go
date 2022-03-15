@@ -10,6 +10,10 @@ import (
 
 func FindMany() (int, models.Users, error) {
 
+	if err := user_repository.IsConnected(); err != nil {
+		return http.StatusInternalServerError, nil, err
+	}
+
 	users, err := user_repository.FindMany()
 	if err != nil {
 		return http.StatusInternalServerError, nil, err
@@ -20,6 +24,10 @@ func FindMany() (int, models.Users, error) {
 }
 
 func FindOneByID(id string) (int, models.User, error) {
+
+	if err := user_repository.IsConnected(); err != nil {
+		return http.StatusInternalServerError, models.User{}, err
+	}
 
 	user, err := user_repository.FindOneByID(id)
 
@@ -40,6 +48,10 @@ func FindOneByID(id string) (int, models.User, error) {
 }
 
 func InsertOne(user models.User) (int, error) {
+
+	if err := user_repository.IsConnected(); err != nil {
+		return http.StatusInternalServerError, err
+	}
 
 	if err := models.CheckFieldsToInsert(user); err != nil {
 		return http.StatusBadRequest, err
@@ -64,6 +76,10 @@ func InsertOne(user models.User) (int, error) {
 }
 
 func UpdateOne(user models.User, userId string) (int, error) {
+
+	if err := user_repository.IsConnected(); err != nil {
+		return http.StatusInternalServerError, err
+	}
 
 	if err := models.CheckFieldsValues(user); err != nil {
 		return http.StatusBadRequest, err
@@ -94,6 +110,10 @@ func UpdateOne(user models.User, userId string) (int, error) {
 }
 
 func DeleteOne(userId string) (int, error) {
+
+	if err := user_repository.IsConnected(); err != nil {
+		return http.StatusInternalServerError, err
+	}
 
 	_, err := user_repository.FindOneByID(userId)
 	if err != nil {
